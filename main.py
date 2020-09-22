@@ -6,10 +6,10 @@ from operator import itemgetter
 import random
 
 
-league = "Harvest"
+league = "Heist"
 account = "Lebaa"
-sessid = "6a8442d5e716cfc0cfd7e9da7c657d4d"
-cfduid = "d362a63b151b7f74c6b8f9bf4efc8a31f1594966418"
+sessid = "0d4e97b4c81bd8815abdf5987a32b45f"
+cfduid = "dd041a7f5d062d35636f17db4f84d2b051599596071"
 
 global ID
 ID = 0
@@ -18,8 +18,11 @@ inventory_x = [1295, 1355, 1405, 1455, 1505, 1555, 1605, 1660, 1725, 1775, 1825,
 inventory_y = [615, 665, 715, 770, 825]
 
 currencytab = []
+currencytab2 = []
 fragmenttab = []
+fragmenttab2 = []
 maptab = []
+maptab2 = []
 ylijäämä = []
 essence = []
 delve = []
@@ -28,13 +31,25 @@ divtab = []
 def parse_currency(item):
     if "Scarabs" in item['icon']:
         a = [item['typeLine'], item['x'], item['y']]
-        fragmenttab.append(a)
+        if len(fragmenttab) < 60:
+            fragmenttab.append(a)
+        else:
+            fragmenttab2.append(a)
     elif "Catalysts" in item['icon']:
+        a = [item['typeLine'], item['x'], item['y']]
+        ylijäämä.append(a)
+    elif "Blueprint" in item['icon']:
+        a = [item['typeLine'], item['x'], item['y']]
+        ylijäämä.append(a)
+    elif "Contract" in item['icon']:
         a = [item['typeLine'], item['x'], item['y']]
         ylijäämä.append(a)
     elif "Oils" in item['icon']:
         a = [item['typeLine'], item['x'], item['y']]
-        currencytab.append(a)
+        if len(currencytab) < 60:
+            currencytab.append(a)
+        else:
+            currencytab2.append(a)
     elif "Essence" in item['icon']:
         a = [item['typeLine'], item['x'], item['y']]
         essence.append(a)
@@ -49,7 +64,10 @@ def parse_currency(item):
         ylijäämä.append(a)
     elif "Breach" in item['icon']:
         a = [item['typeLine'], item['x'], item['y']]
-        fragmenttab.append(a)
+        if len(fragmenttab) < 60:
+            fragmenttab.append(a)
+        else:
+            fragmenttab2.append(a)
     elif "Metamorph" in item['icon']:
         a = [item['typeLine'], item['x'], item['y']]
         ylijäämä.append(a)
@@ -58,27 +76,48 @@ def parse_currency(item):
         ylijäämä.append(a)
     elif "Splinter" in item['icon']:
         a = [item['typeLine'], item['x'], item['y']]
-        fragmenttab.append(a)
+        if len(fragmenttab) < 60:
+            fragmenttab.append(a)
+        else:
+            fragmenttab2.append(a)
     else:
         a = [item['typeLine'], item['x'], item['y']]
-        currencytab.append(a)
+        if len(currencytab) < 60:
+            currencytab.append(a)
+        else:
+            currencytab2.append(a)
 
 def parse_map(item):
     if "Map" in item['typeLine']:
         a = [item['typeLine'], item['x'], item['y']]
-        maptab.append(a)
+        if len(maptab) < 60:
+            maptab.append(a)
+        else:
+            maptab2.append(a)
     elif "Sacrifice" in item['typeLine']:
         a = [item['typeLine'], item['x'], item['y']]
-        fragmenttab.append(a)
+        if len(fragmenttab) < 60:
+            fragmenttab.append(a)
+        else:
+            fragmenttab2.append(a)
     elif "Mortal" in item['typeLine']:
         a = [item['typeLine'], item['x'], item['y']]
-        fragmenttab.append(a)
+        if len(fragmenttab) < 60:
+            fragmenttab.append(a)
+        else:
+            fragmenttab2.append(a)
     elif "Splinter" in item['typeLine']:
         a = [item['typeLine'], item['x'], item['y']]
-        fragmenttab.append(a)
+        if len(fragmenttab) < 60:
+            fragmenttab.append(a)
+        else:
+            fragmenttab2.append(a)
     elif "Offering" in item['typeLine']:
         a = [item['typeLine'], item['x'], item['y']]
-        fragmenttab.append(a)
+        if len(fragmenttab) < 60:
+            fragmenttab.append(a)
+        else:
+            fragmenttab2.append(a)
 
 
 def parse_divination(item):
@@ -223,7 +262,6 @@ def request_tabs():
     }
 
     resp = requests.request("GET", url, headers=headers, data=payload)
-    print(resp.status_code)
     json = resp.json()
     num = 1
     for x in range(num):
@@ -231,6 +269,7 @@ def request_tabs():
         tabiurl = url + "&tabIndex=" + str(x)
         tabi = requests.request("GET", tabiurl, headers=headers, data=payload)
         tabi_json = tabi.json()
+        print(tabi_json)
         parse_tab(tabi_json)
         tabiurl = ""
 
@@ -255,25 +294,60 @@ def stash_to_inventory(lista):
     pyautogui.keyDown('ctrl')
     for l in lista:
         coords = calc_clickpoint(l[1], l[2])
-        pyautogui.moveTo(coords[0], coords[1], random.uniform(0.15, 0.30))
+        pyautogui.moveTo(coords[0], coords[1], random.uniform(0.1, 0.25))
         pyautogui.leftClick()
 
     pyautogui.keyUp('ctrl')
 
 
-def inventory_to_stash(tabi):
-    if tabi == currencytab:
-        pyautogui.leftClick(230,140,0.2)
-    if tabi == fragmenttab:
-        pyautogui.leftClick(305,140,0.2)
-    if tabi == maptab:
-        pyautogui.leftClick(170,140,0.2)
+def inventory_to_stash(tabi,string):
+
+    if string == "currencytab":
+        pyautogui.moveTo(230,140,0.2)
+        pyautogui.leftClick()
+    elif string == "fragmenttab":
+        pyautogui.moveTo(305,140,0.2)
+        pyautogui.leftClick()
+    elif string == "maptab":
+        pyautogui.moveTo(170,140,0.2)
+        pyautogui.leftClick()
+    elif string == "divtab":
+        pyautogui.moveTo(375, 140, 0.2)
+        pyautogui.leftClick()
+    elif string == "essencetab":
+        pyautogui.moveTo(435, 140, 0.2)
+        pyautogui.leftClick()
+    elif string == "delve":
+        pyautogui.moveTo(490, 140, 0.2)
+        pyautogui.leftClick()
+    elif string == "ylijäämä":
+        pyautogui.moveTo(555, 140, 0.2)
+        pyautogui.leftClick()
 
     pyautogui.keyDown('ctrl')
-    for y in inventory_y:
-        for x in inventory_x:
-            pyautogui.moveTo(x,y,random.uniform(0.05,0.15))
-            pyautogui.leftClick()
+    counter = 0
+    kiepit = 0
+    for x in inventory_x:
+        if(kiepit%2) == 0:
+            kiepit += 1
+            for y in inventory_y:
+                if len(tabi) != counter:
+                    pyautogui.moveTo(x,y,random.uniform(0.01,0.05))
+                    for r in range(random.randint(3,6)):
+                        pyautogui.leftClick()
+                    counter += 1
+                else:
+                    break
+
+        elif (kiepit % 2) != 0:
+            kiepit += 1
+            for y in inventory_y[::-1]:
+                if len(tabi) != counter:
+                    pyautogui.moveTo(x, y, random.uniform(0.01, 0.05))
+                    pyautogui.leftClick()
+                    counter += 1
+                else:
+                    break
     pyautogui.keyUp('ctrl')
 
 def countdown(n):
@@ -287,35 +361,40 @@ def countdown(n):
 
 markers = []
 request_tabs()
+'''
 countdown(10)
 
 while True:
 
     stash_to_inventory(currencytab)
-    inventory_to_stash(currencytab)
-    break
+    inventory_to_stash(currencytab, "currencytab")
+    try:
+        stash_to_inventory(currencytab2)
+        inventory_to_stash(currencytab2,"currencytab")
+    except:
+        print("Jotain vituiks")
     stash_to_inventory(fragmenttab)
-    inventory_to_stash(fragmenttab)
+    inventory_to_stash(fragmenttab, "fragmenttab")
+    try:
+        stash_to_inventory(fragmenttab2)
+        inventory_to_stash(fragmenttab2, "fragmenttab")
+    except:
+        print("Jotain vituiks")
     stash_to_inventory(maptab)
-    inventory_to_stash(maptab)
+    inventory_to_stash(maptab, "maptab")
+    try:
+        stash_to_inventory(maptab2)
+        inventory_to_stash(maptab2, "maptab")
+    except:
+        print("Jotain vituiks")
     stash_to_inventory(delve)
-    inventory_to_stash(delve)
+    inventory_to_stash(delve, "delve")
     stash_to_inventory(essence)
-    inventory_to_stash(essence)
+    inventory_to_stash(essence, "essencetab")
     stash_to_inventory(divtab)
-    inventory_to_stash(divtab)
-    #click_items(essence)
-    #click_items(divtab)
-
-    screenshot = window_capture()
-    screenshot = np.array(screenshot)
-    output = draw_crosshairs(screenshot, markers)
-    cv.imshow("Matches", output)
-
-    # press 'q' with the output window focused to exit.
-    # waits 1 ms every loop to process key presses
-    if cv.waitKey(1) == ord("q"):
-        cv.destroyAllWindows()
-        break
+    inventory_to_stash(divtab, "divtab")
+    stash_to_inventory(ylijäämä)
+    inventory_to_stash(ylijäämä, "ylijäämä")
+    break
 
 print("Done.")
