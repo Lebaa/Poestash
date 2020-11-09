@@ -8,8 +8,8 @@ import random
 
 league = "Heist"
 account = "Lebaa"
-sessid = "06eb90a33481fe625796c4fd67f4f8cc"
-cfduid = "d83e779259a5de9bfe3ff2c4ad59fd9b31604933475"
+sessid = "*"
+cfduid = "*"
 
 global ID
 ID = 0
