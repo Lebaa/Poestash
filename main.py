@@ -8,8 +8,8 @@ import random
 
 league = "Heist"
 account = "Lebaa"
-sessid = "*"
-cfduid = "*"
+sessid = "06eb90a33481fe625796c4fd67f4f8cc"
+cfduid = "d83e779259a5de9bfe3ff2c4ad59fd9b31604933475"
 
 global ID
 ID = 0
@@ -29,7 +29,10 @@ delve = []
 divtab = []
 
 def parse_currency(item):
-    if "Scarabs" in item['icon']:
+    if "Incubation" in item['icon']:
+        a = [item['typeLine'], item['x'], item['y']]
+        ylijäämä.append(a)
+    elif "Scarabs" in item['icon']:
         a = [item['typeLine'], item['x'], item['y']]
         if len(fragmenttab) < 60:
             fragmenttab.append(a)
@@ -57,9 +60,6 @@ def parse_currency(item):
         a = [item['typeLine'], item['x'], item['y']]
         delve.append(a)
     elif "Prophecy" in item['icon']:
-        a = [item['typeLine'], item['x'], item['y']]
-        ylijäämä.append(a)
-    elif "Incubation" in item['icon']:
         a = [item['typeLine'], item['x'], item['y']]
         ylijäämä.append(a)
     elif "Breach" in item['icon']:
@@ -106,6 +106,9 @@ def parse_map(item):
             fragmenttab.append(a)
         else:
             fragmenttab2.append(a)
+    elif "Simulacrum" in item['typeLine']:
+        a = [item['typeLine'], item['x'], item['y']]
+        ylijäämä.append(a)
     elif "Splinter" in item['typeLine']:
         a = [item['typeLine'], item['x'], item['y']]
         if len(fragmenttab) < 60:
@@ -113,6 +116,12 @@ def parse_map(item):
         else:
             fragmenttab2.append(a)
     elif "Offering" in item['typeLine']:
+        a = [item['typeLine'], item['x'], item['y']]
+        if len(fragmenttab) < 60:
+            fragmenttab.append(a)
+        else:
+            fragmenttab2.append(a)
+    elif "Fragment" in item['typeLine']:
         a = [item['typeLine'], item['x'], item['y']]
         if len(fragmenttab) < 60:
             fragmenttab.append(a)
@@ -219,7 +228,9 @@ def parse_tab(tab):
     if len(tab['items']) != 0:
         itemit = tab['items']
         for item in itemit:
-            if "Currency" in item['icon']:
+            if "Currency/Heist" in item ['icon']:
+                print("Heisti paskaa")
+            elif "Currency" in item['icon']:
                 parse_currency(item)
             elif "Maps" in item['icon']:
                 parse_map(item)
@@ -275,7 +286,7 @@ def request_tabs():
 
 def calc_clickpoint(x,y):
     x_coord = 30
-    y_coord = 175
+    y_coord = 140
     return [(x_coord + int(x*26.3)), (y_coord + int(y*26.3))]
 
 def draw_crosshairs(img, coordinates):
@@ -289,10 +300,12 @@ def stash_to_inventory(lista):
 
     lista.sort(key=itemgetter(2))
     lista.sort(key=itemgetter(1))
-    pyautogui.moveTo(80,140,0.2)
+
+    pyautogui.moveTo(80,110,0.2)
     pyautogui.leftClick()
     pyautogui.keyDown('ctrl')
     for l in lista:
+
         coords = calc_clickpoint(l[1], l[2])
         pyautogui.moveTo(coords[0], coords[1], random.uniform(0.1, 0.25))
         pyautogui.leftClick()
@@ -302,53 +315,56 @@ def stash_to_inventory(lista):
 
 def inventory_to_stash(tabi,string):
 
-    if string == "currencytab":
-        pyautogui.moveTo(230,140,0.2)
-        pyautogui.leftClick()
-    elif string == "fragmenttab":
-        pyautogui.moveTo(305,140,0.2)
-        pyautogui.leftClick()
-    elif string == "maptab":
-        pyautogui.moveTo(170,140,0.2)
-        pyautogui.leftClick()
-    elif string == "divtab":
-        pyautogui.moveTo(375, 140, 0.2)
-        pyautogui.leftClick()
-    elif string == "essencetab":
-        pyautogui.moveTo(435, 140, 0.2)
-        pyautogui.leftClick()
-    elif string == "delve":
-        pyautogui.moveTo(490, 140, 0.2)
-        pyautogui.leftClick()
-    elif string == "ylijäämä":
-        pyautogui.moveTo(555, 140, 0.2)
-        pyautogui.leftClick()
+    if len(tabi) != 0:
+        if string == "currencytab":
+            pyautogui.moveTo(230,110,0.2)
+            pyautogui.leftClick()
+        elif string == "fragmenttab":
+            pyautogui.moveTo(305,110,0.2)
+            pyautogui.leftClick()
+        elif string == "maptab":
+            pyautogui.moveTo(170,110,0.2)
+            pyautogui.leftClick()
+        elif string == "divtab":
+            pyautogui.moveTo(375, 110, 0.2)
+            pyautogui.leftClick()
+        elif string == "essencetab":
+            pyautogui.moveTo(435, 110, 0.2)
+            pyautogui.leftClick()
+        elif string == "delve":
+            pyautogui.moveTo(490, 110, 0.2)
+            pyautogui.leftClick()
+        elif string == "ylijäämä":
+            pyautogui.moveTo(555, 110, 0.2)
+            pyautogui.leftClick()
 
-    pyautogui.keyDown('ctrl')
-    counter = 0
-    kiepit = 0
-    for x in inventory_x:
-        if(kiepit%2) == 0:
-            kiepit += 1
-            for y in inventory_y:
-                if len(tabi) != counter:
-                    pyautogui.moveTo(x,y,random.uniform(0.01,0.05))
-                    for r in range(random.randint(3,6)):
-                        pyautogui.leftClick()
-                    counter += 1
-                else:
-                    break
+        pyautogui.keyDown('ctrl')
+        counter = 0
+        kiepit = 0
 
-        elif (kiepit % 2) != 0:
-            kiepit += 1
-            for y in inventory_y[::-1]:
-                if len(tabi) != counter:
-                    pyautogui.moveTo(x, y, random.uniform(0.01, 0.05))
-                    pyautogui.leftClick()
-                    counter += 1
-                else:
-                    break
-    pyautogui.keyUp('ctrl')
+        print(tabi)
+        for x in inventory_x:
+            if(kiepit % 2) == 0 or (len(tabi)-counter) <6:
+                kiepit += 1
+                for y in inventory_y:
+                    if len(tabi) != counter:
+                        pyautogui.moveTo(x,y,random.uniform(0.01,0.05))
+                        pyautogui.click(clicks=(random.randint(2,4)), interval=random.uniform(0.05,0.1))
+                        counter += 1
+                    else:
+                        break
+
+            elif (kiepit % 2) != 0:
+                kiepit += 1
+                for y in inventory_y[::-1]:
+                    if len(tabi) != counter:
+                        pyautogui.moveTo(x, y, random.uniform(0.01, 0.05))
+                        pyautogui.click(clicks=(random.randint(3, 6)), interval=random.uniform(0.02, 0.005))
+                        counter += 1
+                    else:
+                        break
+        pyautogui.keyUp('ctrl')
+        pyautogui.leftClick()
 
 def countdown(n):
     print("Script starts in: ")
@@ -361,7 +377,6 @@ def countdown(n):
 
 markers = []
 request_tabs()
-'''
 countdown(10)
 
 while True:
